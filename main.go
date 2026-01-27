@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"testing"
+	"strings"
 )
 
 func cleanInput(text string) []string {
-	return strings.Fields(input)
+	return strings.Fields(text)
 }
 
 func main() {

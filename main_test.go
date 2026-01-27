@@ -1,15 +1,8 @@
 package main
 
 import (
-	"strings"
 	"testing"
 )
-
-// cleanInput splits the input string into words, trimming spaces.
-func cleanInput(input string) []string {
-	// Use strings.Fields which automatically splits by whitespace and removes extra spaces
-	return strings.Fields(input)
-}
 
 // Test function
 func TestCleanInput(t *testing.T) {
