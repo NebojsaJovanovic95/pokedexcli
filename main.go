@@ -6,8 +6,7 @@ import (
 )
 
 func cleanInput(text string) []string {
-	var inputs []string;
-	return inputs
+	return strings.Fields(input)
 }
 
 func main() {
