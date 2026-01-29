@@ -5,11 +5,10 @@ import (
 	"strings"
 	"os"
 	"bufio"
-	"net/http"
-	"encoding/json"
 )
 
 var CliMap map[string]cliCommand
+var LAP LocationAreaPaginator;
 
 type cliCommand struct {
 	name string
@@ -36,38 +35,28 @@ func commandHelp() error {
 	return nil
 }
 
-type LocationAreaResponce struct {
-	Results []LocationArea `json:"results"`
-}
-
-type LocationArea struct {
-	Name string `json:"name"`
-	URL string `json:"url"`
-}
-
 func commandMap() error {
-	url := "https://pokeapi.co/api/v2/location-area/"
-	res, err := http.Get(url)
+	laList, err := LAP.NextPage()
 	if err != nil {
 		return err
-	}
-	defer res.Body.Close()
-	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("failed to fetch location areas")
-	}
-	var data LocationAreaResponce
-	if err := json.NewDecoder(res.Body).Decode(&data); err != nil {
-		return err
 	} else {
-		for _, location := range data.Results {
-			fmt.Println(location.Name)
+		for _, la := range laList {
+			fmt.Println(la.Name)
 		}
+		return nil
 	}
-	return nil
 }
 
 func commandMapb() error {
-	return nil
+	laList, err := LAP.PrevPage()
+	if err != nil {
+		return err
+	} else {
+		for _, la := range laList {
+			fmt.Println(la.Name)
+		}
+		return nil
+	}
 }
 
 func cleanInput(text string) []string {
@@ -91,7 +80,13 @@ func main() {
 			description: "loads list of locations",
 			callback: commandMap,
 		},
-	}
+		"mapb": {
+			name: "mapb",
+			description: "loads previous list of locations",
+			callback: commandMapb,
+		},
+}
+	LAP.Init(20)
 	scanner := bufio.NewScanner(os.Stdin)
 	var line string;
 	for ;; {
