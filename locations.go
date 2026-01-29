@@ -25,7 +25,7 @@ type LocationAreaPaginator struct {
 
 func (LAP *LocationAreaPaginator) Init(limit int) {
 	LAP.Limit = limit
-	LAP.Current = 0
+	LAP.Current = - limit
 	LAP.Size = 0
 	LAP.Cache = make(map[int]LocationArea)
 }
