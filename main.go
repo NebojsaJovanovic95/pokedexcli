@@ -79,6 +79,17 @@ func commandExplore(args []string) error {
 	return Explore(areaName)
 }
 
+func commandCatch(args [] string) error {
+	if len(args) < 1 {
+		fmt.Println("Usage: catch <pokemon_name>")
+		return nil
+	}
+	pokemon_name := args[0]
+	fmt.Printf("Throwing a Pokeball at %s...\n", pokemon_name)
+	err := CatchPokemon(pokemon_name)
+	return err
+}
+
 func cleanInput(text string) []string {
 	return strings.Fields(text)
 }
@@ -109,6 +120,11 @@ func main() {
 			name: "explore",
 			description: "explores are",
 			callback: commandExplore,
+		},
+		"catch": {
+			name: "catch",
+			description: "catch attempt",
+			callback: commandCatch,
 		},
 	}
 	LAP.Init(20)
