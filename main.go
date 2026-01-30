@@ -22,10 +22,10 @@ var LAP LocationAreaPaginator;
 type cliCommand struct {
 	name string
 	description string
-	callback func() error
+	callback func([]string) error
 }
 
-func commandExit() error {
+func commandExit(args []string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return fmt.Errorf("Exiting program")
@@ -39,12 +39,12 @@ func printHelp() {
 	}
 }
 
-func commandHelp() error {
+func commandHelp(args []string) error {
 	printHelp()
 	return nil
 }
 
-func commandMap() error {
+func commandMap(args []string) error {
 	laList, err := LAP.NextPage()
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func commandMap() error {
 	}
 }
 
-func commandMapb() error {
+func commandMapb(args []string) error {
 	laList, err := LAP.PrevPage()
 	if err != nil {
 		return err
@@ -66,6 +66,17 @@ func commandMapb() error {
 		}
 		return nil
 	}
+}
+
+
+func commandExplore(args []string) error {
+	if len(args) < 1 {
+		fmt.Println("Usage: explore <area_name>")
+		return nil
+	}
+
+	areaName := args[0]
+	return Explore(areaName)
 }
 
 func cleanInput(text string) []string {
@@ -94,7 +105,12 @@ func main() {
 			description: "loads previous list of locations",
 			callback: commandMapb,
 		},
-}
+		"explore": {
+			name: "explore",
+			description: "explores are",
+			callback: commandExplore,
+		},
+	}
 	LAP.Init(20)
 	scanner := bufio.NewScanner(os.Stdin)
 	var line string;
@@ -105,16 +121,26 @@ func main() {
 		if err != nil {
 			fmt.Println("Error: %w", err)
 		}
-		if more {
-			line = scanner.Text();
-			commands := cleanInput(line)
-			if command, ok := CliMap[commands[0]]; ok {
-				command.callback()
-			} else {
-				fmt.Println("Error: ", err)
-			}
-		} else {
+		if !more {
 			break
+		}
+		line = scanner.Text();
+		commands := cleanInput(line)
+		if len(commands) == 0 {
+			continue
+		}
+
+		cmdName := commands[0]
+		args := commands[1:]
+
+		command, ok := CliMap[cmdName]
+		if !ok {
+			fmt.Println("Unknown command:", cmdName)
+			continue
+		}
+
+		if err := command.callback(args); err != nil {
+			fmt.Println("Error:", err)
 		}
 	}
 }
