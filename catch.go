@@ -12,7 +12,6 @@ import (
 func CatchPokemon(name string) error {
 	key := "pokemon:" + strings.ToLower(name)
 
-	// 1️⃣ Check cache
 	if data, ok := cache.Get(key); ok {
 		var p PokemonResponse
 		if err := json.Unmarshal(data, &p); err != nil {
@@ -21,7 +20,6 @@ func CatchPokemon(name string) error {
 		return attemptCatch(p)
 	}
 
-	// 2️⃣ Fetch from API
 	url := fmt.Sprintf("https://pokeapi.co/api/v2/pokemon/%s", name)
 	resp, err := http.Get(url)
 	if err != nil {
@@ -38,16 +36,13 @@ func CatchPokemon(name string) error {
 		return err
 	}
 
-	// 3️⃣ Parse
 	var p PokemonResponse
 	if err := json.Unmarshal(body, &p); err != nil {
 		return err
 	}
 
-	// 4️⃣ Cache result
 	cache.Add(key, body)
 
-	// 5️⃣ Attempt catch
 	return attemptCatch(p)
 }
 
