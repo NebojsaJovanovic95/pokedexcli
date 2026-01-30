@@ -5,7 +5,16 @@ import (
 	"strings"
 	"os"
 	"bufio"
+	"time"
+	"pokedexcli/internal/pokecache"
 )
+
+var cache *pokecache.Cache // global cache
+
+func init() {
+	// Initialize the cache with 5-second expiry
+	cache = pokecache.NewCache(5 * time.Second)
+}
 
 var CliMap map[string]cliCommand
 var LAP LocationAreaPaginator;
