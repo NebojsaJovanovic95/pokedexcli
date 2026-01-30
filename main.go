@@ -33,7 +33,7 @@ func commandExit() error {
 
 func printHelp() {
 	fmt.Println("Welcome to the Pokedex!")
-	fmt.Println("Usage:\n")
+	fmt.Println("Usage:")
 	for _, value := range CliMap {
 		fmt.Printf("%s: %s\n", value.name, value.description)
 	}

@@ -1,9 +1,11 @@
 package pokecache
 
 import (
+	"fmt"
 	"testing"
 	"time"
 )
+
 func TestAddGet(t *testing.T) {
 	const interval = 5 * time.Second
 	cases := []struct {
@@ -30,7 +32,7 @@ func TestAddGet(t *testing.T) {
 				return
 			}
 			if string(val) != string(c.val) {
-				t.Errorf("expected to find value")
+				t.Errorf("expected value %q, got %q", c.val, val)
 				return
 			}
 		})
@@ -38,22 +40,24 @@ func TestAddGet(t *testing.T) {
 }
 
 func TestReapLoop(t *testing.T) {
-	const baseTime = 5 * time.Millisecond
-	const waitTime = baseTime + 5*time.Millisecond
-	cache := NewCache(baseTime)
+	const shortInterval = 10 * time.Millisecond
+	const waitTime = 20 * time.Millisecond
+
+	cache := NewCache(shortInterval)
 	cache.Add("https://example.com", []byte("testdata"))
 
-	_, ok := cache.Get("https://example.com")
-	if !ok {
-		t.Errorf("expected to find key")
+	// Ensure the key exists initially
+	if _, ok := cache.Get("https://example.com"); !ok {
+		t.Errorf("expected to find key initially")
 		return
 	}
 
+	// Wait for longer than the interval
 	time.Sleep(waitTime)
 
-	_, ok = cache.Get("https://example.com")
-	if ok {
-		t.Errorf("expected to not find key")
+	// Now the key should be removed by the reaper
+	if _, ok := cache.Get("https://example.com"); ok {
+		t.Errorf("expected key to be removed after interval")
 		return
 	}
 }
