@@ -6,9 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
-	"time"
 
-	"pokedexcli/internal/pokecache"
 )
 
 func Explore(areaName string) error {
@@ -41,14 +39,14 @@ func Explore(areaName string) error {
 		return err
 	}
 
-	var res LocationAreaResponce
+	var res LocationAreaDetail
 	if err := json.Unmarshal(body, &res); err != nil {
 		return err
 	}
 
 	// extract names
 	names := []string{}
-		for _, encounter := range res.Results[0].PokemonEncounters {
+		for _, encounter := range res.PokemonEncounters {
 		names = append(names, encounter.Pokemon.Name)
 	}
 
